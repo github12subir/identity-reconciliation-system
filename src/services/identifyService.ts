@@ -36,7 +36,7 @@ export const processIdentity = async (
   const emails = new Set<string>();
   const phones = new Set<string>();
 
-  initialMatches.forEach(contact => {
+  initialMatches.forEach((contact: Contact) => {
     if (contact.email) emails.add(contact.email);
     if (contact.phoneNumber) phones.add(contact.phoneNumber);
   });
