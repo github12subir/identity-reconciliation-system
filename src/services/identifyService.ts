@@ -1,4 +1,4 @@
-import prisma from "../prisma/prismaClient";
+import { prisma } from "../prisma/prismaClient";
 import { Contact } from "@prisma/client";
 import { buildResponse } from "../utils/responseBuilder";
 
