@@ -1,214 +1,193 @@
-# Identity Reconciliation API
+# Identity Reconciliation System
 
-This service identifies and links customer contacts across multiple purchases.
+A backend service that identifies and links customer contacts based on their email address and phone number.
 
-Customers may use different email addresses or phone numbers when placing orders.
-The system reconciles identities to maintain a unified customer profile.
+In many applications, the same customer may interact using different contact details (for example, the same person using multiple emails or phone numbers). This service reconciles those identities by linking related contacts together and determining a primary contact along with any secondary contacts.
 
-The API determines whether a request belongs to an existing customer identity or if a new identity should be created.
+The API accepts an email and/or phone number and returns a unified view of the customer's contact information.
+
+## Live API
+
+Base URL:
+
+```
+https://identity-reconciliation-system-6arj.onrender.com
+```
+
+Endpoint:
+
+```
+POST /identify
+```
 
 ---
 
 ## Tech Stack
 
-- Node.js
-- Express
-- TypeScript
-- PostgreSQL
-- Prisma ORM
-- Supabase (Cloud PostgreSQL Database)
-- Render (Deployment)
+Node.js
+
+TypeScript
+
+Express.js
+
+Prisma ORM
+
+PostgreSQL
+
+Supabase (Cloud PostgreSQL Database)
+
+Render (Deployment)
 
 ---
 
 ## Project Structure
 
 ```
-src
-│
-├── controllers
-│   └── identifyController.ts
-│
-├── routes
-│   └── identifyRoutes.ts
-│
-├── services
-│   └── identityService.ts
-│
-├── utils
-│   └── responseBuilder.ts
+identity-reconciliation
 │
 ├── prisma
-│   └── prismaClient.ts
+│   ├── migrations
+│   └── schema.prisma
 │
-└── server.ts
-```
-
-Architecture flow:
-
-```
-Route → Controller → Service → Database
-                       ↓
-                    Utils
-```
-
----
-
-## Database
-
-The project uses **Supabase PostgreSQL** as a managed cloud database.
-
-Prisma connects to the database using the `DATABASE_URL` stored in the `.env` file.
-
-Example:
-
-```
-DATABASE_URL="postgresql://username:password@host:5432/database"
-```
-
----
-
-## Database Schema
-
-Contact table fields:
-
-| Field          | Type      | Description                   |
-| -------------- | --------- | ----------------------------- |
-| id             | Int       | Primary key                   |
-| email          | String?   | Customer email                |
-| phoneNumber    | String?   | Customer phone number         |
-| linkedId       | Int?      | Points to the primary contact |
-| linkPrecedence | Enum      | primary / secondary           |
-| createdAt      | DateTime  | Record creation time          |
-| updatedAt      | DateTime  | Record update time            |
-| deletedAt      | DateTime? | Soft delete field             |
-
-### LinkPrecedence Enum
-
-```
-primary
-secondary
+├── src
+│   ├── controllers
+│   │   └── identifyController.ts
+│   │
+│   ├── routes
+│   │   └── identifyRoutes.ts
+│   │
+│   ├── services
+│   │   └── identifyService.ts
+│   │
+│   ├── prisma
+│   │   └── prismaClient.ts
+│   │
+│   ├── utils
+│   │   └── responseBuilder.ts
+│   │
+│   ├── app.ts
+│   └── server.ts
+│
+├── .gitignore
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
 ---
 
-## API Endpoint
-
-POST `/identify`
+## API Usage
 
 ### Request
 
+```
+POST /identify
+```
+
+Example Request Body
+
 ```json
 {
-  "email": "string",
-  "phoneNumber": "string"
+  "email": "test@example.com",
+  "phoneNumber": "9999999999"
 }
 ```
 
-Both fields are optional, but at least one must be provided.
-
----
-
-## Response
+### Response
 
 ```json
 {
   "contact": {
     "primaryContactId": 1,
-    "emails": ["primary@email.com", "secondary@email.com"],
+    "emails": ["test@example.com"],
     "phoneNumbers": ["9999999999"],
-    "secondaryContactIds": [23, 45]
+    "secondaryContactIds": []
   }
 }
 ```
 
 ---
 
-## Identity Resolution Logic
+## Local Setup
 
-The service performs the following steps:
+1. Clone the repository
 
-1. Search for contacts with matching email or phone number.
-2. Expand the identity graph to include indirectly linked contacts.
-3. Identify the **oldest primary contact**.
-4. If multiple primary contacts exist:
-   - Convert newer primary contacts to **secondary**
-   - Link them using `linkedId`.
+```
+git clone https://github.com/github12subir/identity-reconciliation-system.git
+```
 
-5. If new email or phone information appears, create a **secondary contact**.
-6. Return a consolidated identity response.
-
----
-
-## Running the Project Locally
-
-### Install dependencies
+2. Install dependencies
 
 ```
 npm install
 ```
 
-### Setup environment variables
+3. Setup environment variables
 
-Create `.env` file:
-
-```
-DATABASE_URL="your_supabase_postgres_connection_string"
-```
-
----
-
-### Run Prisma migration
+Create `.env`
 
 ```
-npx prisma migrate dev --name init
+DATABASE_URL=your_database_url
 ```
 
----
+4. Run database migrations
 
-### Start the server
+```
+npx prisma migrate dev
+```
+
+5. Run the application (Development)
 
 ```
 npm run dev
 ```
 
-Server runs at:
+Server will start at:
 
 ```
 http://localhost:3000
 ```
 
----
+6. Build and run (Production)
 
-## Example Request
+Build the project:
 
 ```
-POST /identify
+npm run build
 ```
 
-Body:
+Start the server:
 
-```json
-{
-  "email": "doc@fluxkart.com",
-  "phoneNumber": "123456"
-}
+```
+npm start
 ```
 
 ---
 
 ## Deployment
 
-The API is deployed on **Render**.
+The application is deployed on Render.
 
-Example endpoint:
+Live URL:
 
 ```
-https://your-render-url.com/identify
+https://identity-reconciliation-system-6arj.onrender.com
 ```
 
 ---
 
 ## Author
 
-Subir
+Subir Mondal
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
